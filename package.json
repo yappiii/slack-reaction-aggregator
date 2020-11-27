@@ -1,0 +1,25 @@
+{
+   "name": "slack-reaction-aggregator",
+   "version": "1.0.0",
+   "main": "index.js",
+   "author": "hogeya",
+   "license": "MIT",
+   "devDependencies": {
+      "@types/node": "^8.0.29",
+      "eslint": "^7.14.0",
+      "ts-node": "3.3.0",
+      "typescript": "3.3.3333"
+   },
+   "dependencies": {
+      "@slack/rtm-api": "^5.0.5",
+      "@slack/web-api": "^5.13.0",
+      "dotenv": "^8.2.0",
+      "moment": "^2.29.1",
+      "mysql": "^2.14.1",
+      "reflect-metadata": "^0.1.10",
+      "typeorm": "0.2.29"
+   },
+   "scripts": {
+      "start": "ts-node src/index.ts"
+   }
+}
