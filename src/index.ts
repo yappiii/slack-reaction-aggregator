@@ -139,7 +139,6 @@ const sleep = async (t: number) => {
     ).flat()
 
     await connection.manager.save(ReactionModel, reactionModels)
-    await sleep(30000)
     await connection.close()
   }
 })()

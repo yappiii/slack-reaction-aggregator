@@ -6,5 +6,6 @@
 
 1. `docker-compose up --build -d`
 2. `yarn install`
-3. `./node_modules/.bin/tsc`
-4. `node ./dist/index.js`
+3. `yarn ts-node ./node_modules/.bin/typeorm migration:run`
+4. `./node_modules/.bin/tsc`
+5. `node ./dist/index.js`
