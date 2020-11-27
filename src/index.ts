@@ -66,26 +66,16 @@ const sleep = async (t: number) => {
   dotenv.config()
   const api = new WebClient(process.env.SLACK_BOT_TOKEN)
 
-  const connectionOption: ConnectionOptions = {
-    type: 'mysql',
-    host: process.env.DB_HOST,
-    port: parseInt(process.env.DB_PORT),
-    database: process.env.DB_NAME,
-    username: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    entities: [__dirname + "/models/*.{ts,js}"]
-  }
-
   const users = await api.users.list() as UserList
   const userModels = users.members.map(
     user => formatUserModel(user.id, user.name)
   )
 
-  const connection = await createConnection(connectionOption)
+  const connection = await createConnection()
   await connection.manager.save(UserModel, userModels)
   await connection.close()
 
-  for (let i = 0; i < 12; i++) {
+  for (let i = 0; i < 24; i++) {
     const conversations = await api.conversations.list() as Conversations
 
     const historiesByChannel: {channel_id: string, history: History}[] = []
@@ -131,7 +121,7 @@ const sleep = async (t: number) => {
       )
     )
 
-    const connection = await createConnection(connectionOption)
+    const connection = await createConnection()
     const savedMessageModels: MessageModel[] = await connection.manager.save(MessageModel, messageModels)
 
     // tbl_reactionに永続化するためのORM list
