@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { createConnection, ConnectionOptions } from "typeorm";
+import { createConnection } from "typeorm";
 import dotenv from 'dotenv'
 import { WebClient, WebAPICallResult } from '@slack/web-api'
 import moment from 'moment'
@@ -42,18 +42,6 @@ interface History extends WebAPICallResult {
   messages: Message[]
 }
 
-const formatMessageModel = (userId: string, text: string, url: string, postAt: string, channelId: string) => {
-  return MessageModel.of(userId, text, url, new Date(postAt), channelId)
-}
-
-const formatReactionModel = (userId: string, reactedUserId: string, messageId: number, name: string) => {
-  return ReactionModel.of(userId, reactedUserId, messageId, name)
-}
-
-const formatUserModel = (slackId: string, name: string) => {
-  return UserModel.of(slackId, name)
-}
-
 const sleep = async (t: number) => {
   return await new Promise(r => {
     setTimeout(() => {
@@ -68,7 +56,7 @@ const sleep = async (t: number) => {
 
   const users = await api.users.list() as UserList
   const userModels = users.members.map(
-    user => formatUserModel(user.id, user.name)
+    user => UserModel.of(user.id, user.name)
   )
 
   const connection = await createConnection()
@@ -111,12 +99,11 @@ const sleep = async (t: number) => {
     ).flat()
 
     const messageModels = filteredMessages.map(
-      filteredMessage => formatMessageModel(
+      filteredMessage => MessageModel.of(
         filteredMessage.message.user,
         filteredMessage.message.text,
-        // TODO domainの動的取得
         filteredMessage.channel_id + "/p" + filteredMessage.message.ts,
-        moment.unix(parseInt(filteredMessage.message.ts)).toString(),
+        new Date(moment.unix(parseInt(filteredMessage.message.ts)).toString()),
         filteredMessage.channel_id
       )
     )
@@ -128,7 +115,7 @@ const sleep = async (t: number) => {
     const reactionModels = filteredMessages.map(
       (filteredMessage, index) => filteredMessage.message.reactions.map(
         reaction => reaction.users.map(
-          user => formatReactionModel(
+          user => ReactionModel.of(
             user,
             filteredMessage.message.user,
             savedMessageModels[index].id,
